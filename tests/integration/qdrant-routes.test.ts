@@ -91,7 +91,7 @@ test.after(async () => {
 
 test("GET /api/settings/qdrant — returns settings with masked API key shape", async () => {
   const req = await makeAuthRequest("GET", "http://localhost/api/settings/qdrant");
-  const res = await qdrantSettingsRoute.GET(req as any);
+  const res = await qdrantSettingsRoute.GET(req as never);
 
   assert.strictEqual(res.status, 200);
   const body = await res.json();
@@ -110,7 +110,7 @@ test("GET /api/settings/qdrant — returns settings with masked API key shape", 
 test("GET /api/settings/qdrant — 401 without auth", async () => {
   await setRequireLogin(true);
   const req = makeUnauthRequest("GET", "http://localhost/api/settings/qdrant");
-  const res = await qdrantSettingsRoute.GET(req as any);
+  const res = await qdrantSettingsRoute.GET(req as never);
   assert.strictEqual(res.status, 401);
   await setRequireLogin(false);
 });
@@ -126,7 +126,7 @@ test("PUT /api/settings/qdrant — updates settings and returns new masked shape
     embeddingModel: "openai/text-embedding-3-small",
   });
 
-  const res = await qdrantSettingsRoute.PUT(req as any);
+  const res = await qdrantSettingsRoute.PUT(req as never);
   assert.strictEqual(res.status, 200);
 
   const body = await res.json();
@@ -148,7 +148,7 @@ test("PUT enabled=true also activates Qdrant as the engine (memoryVectorStore=qd
     host: "qdrant-server",
     collection: "c",
   });
-  const res = await qdrantSettingsRoute.PUT(req as any);
+  const res = await qdrantSettingsRoute.PUT(req as never);
   assert.strictEqual(res.status, 200);
 
   const s = (await localDb.getSettings()) as Record<string, unknown>;
@@ -165,12 +165,12 @@ test("PUT enabled=false resets the engine back to auto (sqlite-vec)", async () =
       enabled: true,
       host: "qdrant-server",
       collection: "c",
-    })) as any
+    })) as never
   );
   await qdrantSettingsRoute.PUT(
     (await makeAuthRequest("PUT", "http://localhost/api/settings/qdrant", {
       enabled: false,
-    })) as any
+    })) as never
   );
 
   const s = (await localDb.getSettings()) as Record<string, unknown>;
@@ -187,7 +187,7 @@ test("PUT without the enabled field must not change memoryVectorStore", async ()
   await qdrantSettingsRoute.PUT(
     (await makeAuthRequest("PUT", "http://localhost/api/settings/qdrant", {
       collection: "renamed",
-    })) as any
+    })) as never
   );
 
   const s = (await localDb.getSettings()) as Record<string, unknown>;
@@ -215,7 +215,7 @@ test("PUT enabled=true invalidates the memory-settings cache (retrieval sees qdr
       enabled: true,
       host: "qdrant-server",
       collection: "c",
-    })) as any
+    })) as never
   );
   assert.strictEqual(res.status, 200);
 
@@ -234,7 +234,7 @@ test("PUT /api/settings/qdrant — 400 invalid settings (invalid port type in st
     port: "not-a-number",
   });
 
-  const res = await qdrantSettingsRoute.PUT(req as any);
+  const res = await qdrantSettingsRoute.PUT(req as never);
   assert.strictEqual(res.status, 400);
   const body = await res.json();
   assert.ok(body.message || body.error, "should return error");
@@ -243,7 +243,7 @@ test("PUT /api/settings/qdrant — 400 invalid settings (invalid port type in st
 test("PUT /api/settings/qdrant — 401 without auth", async () => {
   await setRequireLogin(true);
   const req = makeUnauthRequest("PUT", "http://localhost/api/settings/qdrant", { enabled: true });
-  const res = await qdrantSettingsRoute.PUT(req as any);
+  const res = await qdrantSettingsRoute.PUT(req as never);
   assert.strictEqual(res.status, 401);
   await setRequireLogin(false);
 });
@@ -257,7 +257,7 @@ test("GET /api/settings/qdrant/health — returns health result shape (qdrant di
     headers: Object.fromEntries(headers.entries()),
   });
 
-  const res = await qdrantHealthRoute.GET(req as any);
+  const res = await qdrantHealthRoute.GET(req as never);
   assert.strictEqual(res.status, 200);
 
   const body = await res.json();
@@ -292,7 +292,7 @@ test("GET /api/settings/qdrant/health — reports named collection vector metada
 
   try {
     const req = await makeAuthRequest("GET", "http://localhost/api/settings/qdrant/health");
-    const res = await qdrantHealthRoute.GET(req as any);
+    const res = await qdrantHealthRoute.GET(req as never);
     const body = await res.json();
 
     assert.strictEqual(res.status, 200);
@@ -309,7 +309,7 @@ test("GET /api/settings/qdrant/health — reports named collection vector metada
 test("GET /api/settings/qdrant/health — 401 without auth", async () => {
   await setRequireLogin(true);
   const req = makeUnauthRequest("GET", "http://localhost/api/settings/qdrant/health");
-  const res = await qdrantHealthRoute.GET(req as any);
+  const res = await qdrantHealthRoute.GET(req as never);
   assert.strictEqual(res.status, 401);
   await setRequireLogin(false);
 });
@@ -322,7 +322,7 @@ test("POST /api/settings/qdrant/search — returns ok + results array", async ()
     topK: 5,
   });
 
-  const res = await qdrantSearchRoute.POST(req as any);
+  const res = await qdrantSearchRoute.POST(req as never);
   assert.strictEqual(res.status, 200);
 
   const body = await res.json();
@@ -336,7 +336,7 @@ test("POST /api/settings/qdrant/search — 400 invalid body (empty query)", asyn
     topK: 5,
   });
 
-  const res = await qdrantSearchRoute.POST(req as any);
+  const res = await qdrantSearchRoute.POST(req as never);
   assert.strictEqual(res.status, 400);
   const body = await res.json();
   assert.ok(body.message || body.error, "should return error");
@@ -346,7 +346,7 @@ test("POST /api/settings/qdrant/search — 400 invalid body (empty query)", asyn
 
 test("POST /api/settings/qdrant/cleanup — returns ok + deletedCount + retentionDays", async () => {
   const req = await makeAuthRequest("POST", "http://localhost/api/settings/qdrant/cleanup");
-  const res = await qdrantCleanupRoute.POST(req as any);
+  const res = await qdrantCleanupRoute.POST(req as never);
 
   assert.strictEqual(res.status, 200);
   const body = await res.json();
@@ -365,21 +365,23 @@ test("GET /api/settings/qdrant/embedding-models — returns models array", async
     headers: Object.fromEntries(headers.entries()),
   });
 
-  const res = await qdrantEmbeddingModelsRoute.GET(req as any);
+  const res = await qdrantEmbeddingModelsRoute.GET(req as never);
   // 200 expected; verify shape
   assert.strictEqual(res.status, 200);
   const body = await res.json();
   assert.ok(Array.isArray(body.models), "should have models array");
   // Should have at least the default fallback model
   assert.ok(body.models.length > 0, "should have at least one model");
-  const defaultModel = body.models.find((m: any) => m.value === "openai/text-embedding-3-small");
+  const defaultModel = body.models.find(
+    (model: { value?: string }) => model.value === "openai/text-embedding-3-small"
+  );
   assert.ok(defaultModel, "should include openai/text-embedding-3-small as default");
 });
 
 test("GET /api/settings/qdrant/embedding-models — 401 without auth", async () => {
   await setRequireLogin(true);
   const req = makeUnauthRequest("GET", "http://localhost/api/settings/qdrant/embedding-models");
-  const res = await qdrantEmbeddingModelsRoute.GET(req as any);
+  const res = await qdrantEmbeddingModelsRoute.GET(req as never);
   assert.strictEqual(res.status, 401);
   await setRequireLogin(false);
 });
@@ -395,7 +397,7 @@ test("Qdrant routes — error response has no stack trace in body", async () => 
     body: "not-valid-json{{{",
   });
 
-  const res = await qdrantSettingsRoute.PUT(req as any);
+  const res = await qdrantSettingsRoute.PUT(req as never);
   assert.ok(res.status >= 400, "should return error status");
 
   const body = await res.json();

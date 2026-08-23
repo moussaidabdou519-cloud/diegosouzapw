@@ -85,6 +85,10 @@ test("relay route: normalizes plain-text Bifrost 404 into JSON error (Issue #1)"
   setupBifrostEnv();
   const relayToken = seedRelayToken(`relay_err_${Date.now()}`);
 
+  const { POST } = await import(
+    `../../../../src/app/api/v1/relay/chat/completions/route.ts?case=${Date.now()}-${Math.random()}`
+  );
+
   // Bifrost sidecar returns a raw HTML/plain-text non-OK response — the exact
   // "invalid character 'd'" scenario behind client JSON parse failures.
   globalThis.fetch = async () => {
@@ -93,10 +97,6 @@ test("relay route: normalizes plain-text Bifrost 404 into JSON error (Issue #1)"
       headers: { "content-type": "text/html" },
     });
   };
-
-  const { POST } = await import(
-    `../../../../src/app/api/v1/relay/chat/completions/route.ts?case=${Date.now()}-${Math.random()}`
-  );
 
   const req = new Request("http://localhost/api/v1/relay/chat/completions", {
     method: "POST",
@@ -109,12 +109,12 @@ test("relay route: normalizes plain-text Bifrost 404 into JSON error (Issue #1)"
   });
 
   const res = await POST(req);
+  const raw = await res.text();
   // Status preserved from upstream (404), but body is valid JSON, not HTML.
-  assert.equal(res.status, 404);
+  assert.equal(res.status, 404, `unexpected relay response: ${raw}`);
   assert.equal(res.headers.get("content-type"), "application/json");
   // The critical fix: the client receives parseable JSON, NOT a raw HTML body
   // (which previously caused "invalid character 'd'" JSON.parse failures).
-  const raw = await res.text();
   assert.doesNotMatch(String(raw), /^</, "response body must be JSON, not raw HTML");
   const body = JSON.parse(raw);
   assert.ok(body?.error?.message, "must contain an error message");
@@ -127,16 +127,16 @@ test("relay route: normalizes HTML 502 from Bifrost into JSON error (Issue #1)",
   setupBifrostEnv();
   const relayToken = seedRelayToken(`relay_err_${Date.now()}`);
 
+  const { POST } = await import(
+    `../../../../src/app/api/v1/relay/chat/completions/route.ts?case=${Date.now()}-${Math.random()}`
+  );
+
   globalThis.fetch = async () => {
     return new Response(
       "<!doctype html><title>502 Bad Gateway</title><pre>invalid character 'd'</pre>",
       { status: 502, headers: { "content-type": "text/html" } }
     );
   };
-
-  const { POST } = await import(
-    `../../../../src/app/api/v1/relay/chat/completions/route.ts?case=${Date.now()}-${Math.random()}`
-  );
 
   const req = new Request("http://localhost/api/v1/relay/chat/completions", {
     method: "POST",
@@ -167,6 +167,10 @@ test("relay route: strips stale upstream content-length before serializing JSON 
   setupBifrostEnv();
   const relayToken = seedRelayToken(`relay_err_${Date.now()}`);
 
+  const { POST } = await import(
+    `../../../../src/app/api/v1/relay/chat/completions/route.ts?case=${Date.now()}-${Math.random()}`
+  );
+
   // The upstream Response carries an EXPLICIT content-length for its own (HTML)
   // body. Once the route replaces that body with a freshly-serialized JSON error,
   // a stale content-length copied verbatim onto the outgoing Response would
@@ -184,10 +188,6 @@ test("relay route: strips stale upstream content-length before serializing JSON 
     });
   };
 
-  const { POST } = await import(
-    `../../../../src/app/api/v1/relay/chat/completions/route.ts?case=${Date.now()}-${Math.random()}`
-  );
-
   const req = new Request("http://localhost/api/v1/relay/chat/completions", {
     method: "POST",
     headers: {
@@ -200,8 +200,16 @@ test("relay route: strips stale upstream content-length before serializing JSON 
 
   const res = await POST(req);
   assert.equal(res.status, 404);
-  assert.equal(res.headers.get("content-encoding"), null, "stale content-encoding must be stripped");
-  assert.equal(res.headers.get("transfer-encoding"), null, "stale transfer-encoding must be stripped");
+  assert.equal(
+    res.headers.get("content-encoding"),
+    null,
+    "stale content-encoding must be stripped"
+  );
+  assert.equal(
+    res.headers.get("transfer-encoding"),
+    null,
+    "stale transfer-encoding must be stripped"
+  );
 
   const raw = await res.text();
   const declaredLength = res.headers.get("content-length");
@@ -220,16 +228,16 @@ test("relay route: upstream 401 recorded as analytics error not success (Issue #
   setupBifrostEnv();
   const relayToken = seedRelayToken(`relay_err_${Date.now()}`);
 
+  const { POST } = await import(
+    `../../../../src/app/api/v1/relay/chat/completions/route.ts?case=${Date.now()}-${Math.random()}`
+  );
+
   globalThis.fetch = async () => {
     return new Response(JSON.stringify({ error: { message: "unauthorized" } }), {
       status: 401,
       headers: { "content-type": "application/json" },
     });
   };
-
-  const { POST } = await import(
-    `../../../../src/app/api/v1/relay/chat/completions/route.ts?case=${Date.now()}-${Math.random()}`
-  );
 
   const req = new Request("http://localhost/api/v1/relay/chat/completions", {
     method: "POST",

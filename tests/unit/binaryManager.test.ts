@@ -170,8 +170,8 @@ describe("binaryManager", () => {
       fs.mkdirSync(fakePowerShellDir, { recursive: true });
       fs.writeFileSync(
         path.join(fakePowerShellDir, "powershell"),
-        "#!/bin/sh\nprintf '%s\\n' \"$@\" > \"$OMNI_TEST_COMMAND_LOG\"\n"
-          + "mkdir -p \"$OMNI_TEST_EXTRACT_DIR\"\nprintf 'installed-binary' > \"$OMNI_TEST_EXTRACT_DIR/cli-proxy-api\"\n"
+        '#!/bin/sh\nprintf \'%s\\n\' "$@" > "$OMNI_TEST_COMMAND_LOG"\n' +
+          'mkdir -p "$OMNI_TEST_EXTRACT_DIR"\nprintf \'installed-binary\' > "$OMNI_TEST_EXTRACT_DIR/cli-proxy-api"\n'
       );
       fs.chmodSync(path.join(fakePowerShellDir, "powershell"), 0o755);
       process.env.PATH = `${fakePowerShellDir}:${originalPath || ""}`;
@@ -245,7 +245,7 @@ describe("binaryManager", () => {
 
         assert.equal(spawn.command, path.join(binDir, "cliproxyapi.exe"));
         assert.equal(fs.existsSync(spawn.command), true);
-        assert.equal(await mod.getCurrentBinaryPath(tmpDir), spawn.command);
+        assert.equal(await mod.getCurrentBinaryPath(tmpDir), fs.realpathSync(spawn.command));
       } finally {
         if (originalPlatformDescriptor) {
           Object.defineProperty(process, "platform", originalPlatformDescriptor);
@@ -276,8 +276,8 @@ describe("binaryManager", () => {
       fs.mkdirSync(fakePowerShellDir, { recursive: true });
       fs.writeFileSync(
         path.join(fakePowerShellDir, "powershell"),
-        "#!/bin/sh\nprintf '%s\\n' \"$@\" > \"$OMNI_TEST_COMMAND_LOG_PT\"\n"
-          + "mkdir -p \"$OMNI_TEST_EXTRACT_DIR_PT\"\nprintf 'installed-binary' > \"$OMNI_TEST_EXTRACT_DIR_PT/cli-proxy-api\"\n"
+        '#!/bin/sh\nprintf \'%s\\n\' "$@" > "$OMNI_TEST_COMMAND_LOG_PT"\n' +
+          'mkdir -p "$OMNI_TEST_EXTRACT_DIR_PT"\nprintf \'installed-binary\' > "$OMNI_TEST_EXTRACT_DIR_PT/cli-proxy-api"\n'
       );
       fs.chmodSync(path.join(fakePowerShellDir, "powershell"), 0o755);
       process.env.PATH = `${fakePowerShellDir}:${originalPath || ""}`;

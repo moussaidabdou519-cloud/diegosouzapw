@@ -42,6 +42,7 @@ test("CLI_TOOLS registry contains all expected tools including rebuilt Qwen Code
     "omp",
     "letta",
     "agent-deck",
+    "prime-agent",
     "crush",
     "grok-build",
     "qwen",
