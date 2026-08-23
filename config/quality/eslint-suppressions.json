@@ -683,11 +683,6 @@
       "count": 1
     }
   },
-  "src/app/api/settings/export-json/route.ts": {
-    "no-restricted-imports": {
-      "count": 1
-    }
-  },
   "src/app/api/settings/free-proxies/[id]/add-to-pool/route.ts": {
     "no-restricted-imports": {
       "count": 1
@@ -1302,11 +1297,6 @@
     }
   },
   "src/shared/utils/apiAuth.ts": {
-    "no-restricted-imports": {
-      "count": 1
-    }
-  },
-  "src/shared/utils/apiKeyPolicy.ts": {
     "no-restricted-imports": {
       "count": 1
     }
