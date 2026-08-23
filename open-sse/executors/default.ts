@@ -504,10 +504,16 @@ export class DefaultExecutor extends BaseExecutor {
         applyClineAuthHeaders(headers, credentials, effectiveKey, clientHeaders, true);
         break;
       case "cline":
-        // Cline's API requires the bearer token prefixed with `workos:` plus a
-        // set of Cline client-identification headers; plain `Bearer <token>`
-        // is rejected upstream. applyClineAuthHeaders() emits both.
-        applyClineAuthHeaders(headers, credentials, effectiveKey, clientHeaders, false);
+        // Cline's OAuth flow requires the bearer token prefixed with `workos:` plus a
+        // set of Cline client-identification headers. However, BYOK API keys must NOT
+        // have the `workos:` prefix.
+        if (credentials?.authType === "apikey" || credentials?.authType === "api_key") {
+          console.debug("[Auth] Using direct API key for Cline/Kilo Code request.");
+          applyClineAuthHeaders(headers, credentials, effectiveKey, clientHeaders, true);
+        } else {
+          console.debug("[Auth] Using OAuth token for Cline/Kilo Code request.");
+          applyClineAuthHeaders(headers, credentials, effectiveKey, clientHeaders, false);
+        }
         break;
       default:
         if (this.usesClaudeCodeProtocol(credentials)) {
@@ -639,8 +645,7 @@ export class DefaultExecutor extends BaseExecutor {
 
     const record = body as Record<string, unknown>;
     const rf = record.response_format as
-      | { type?: string; json_schema?: { schema?: unknown } }
-      | undefined;
+      { type?: string; json_schema?: { schema?: unknown } } | undefined;
     if (!rf) return body;
 
     // openai-compatible-* providers accept json_object natively — only the
