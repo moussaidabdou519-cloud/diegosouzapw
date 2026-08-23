@@ -805,6 +805,13 @@
     "batchConceptBenefit50pct": "50% de desconto em tokens de entrada e saída",
     "batchConceptAsync24h": "Assíncrono com janela de 24h",
     "batchConceptUseCases": "Indicado para classificação em massa, avaliações e embeddings",
+    "batchHeaderSubtitle": "Execute várias solicitações como um único job",
+    "batchStep1": "1 · Enviar JSONL",
+    "batchStep1Desc": "Adicionar solicitações",
+    "batchStep2": "2 · Criar batch",
+    "batchStep2Desc": "Executar job",
+    "batchStep3": "3 · Obter resultados",
+    "batchStep3Desc": "Baixar saída",
     "filesConceptTitle": "Arquivos de batch",
     "filesConceptSubtitle": "Arquivos JSONL usados pelos batches: requisições de entrada, resultados e erros.",
     "filesConceptInput": "Entrada — seu JSONL com uma requisição por linha",
@@ -2906,7 +2913,8 @@
       "omp": "Agente de codificação de terminal Oh My Pi",
       "letta": "Agente CLI Letta com memória persistente e uso de ferramentas",
       "warp": "Terminal de IA Warp com suporte a provedor personalizado",
-      "agent-deck": "Orquestrador multi-agente Agent Deck"
+      "agent-deck": "Orquestrador multi-agente Agent Deck",
+      "prime-agent": "Prime Agent com suporte a provedores compatíveis com OpenAI"
     },
     "guides": {
       "cursor": {
@@ -3831,6 +3839,9 @@
   },
   "endpoint": {
     "title": "Endpoint da API",
+    "subtitle": "Use o endpoint compatível com OpenAI com a maioria dos SDKs e ferramentas.",
+    "testEndpoint": "Testar endpoint →",
+    "advancedProtocols": "Protocolos avançados",
     "available": "Endpoints Disponíveis",
     "cloudProxy": "Proxy na Nuvem",
     "disableConfirm": "Tem certeza que deseja desativar o proxy na nuvem?",
@@ -12034,6 +12045,7 @@
       "acp": {
         "title": "ACP Agents",
         "phrase": "CLIs que o OmniRoute spawna como backend de execução (fluxo reverso)",
+        "warning": "A maioria dos usuários pode ignorar isto — use apenas quando uma integração exigir.",
         "flow": "Cliente → OmniRoute → spawn CLI (stdio/ACP) → resposta",
         "seeOther": "Ver →"
       }
@@ -13341,6 +13353,13 @@
   },
   "resilienceConnections": {
     "title": "Resiliência de Conexão",
+    "reassuranceTitle": "Suas conexões se recuperam automaticamente",
+    "reassuranceDetail": "Normalmente nenhuma ação é necessária. O OmniRoute pausa temporariamente uma conexão após falhas e depois tenta novamente com segurança.",
+    "plainStates": {
+      "healthy": "As solicitações podem ser enviadas",
+      "coolingDown": "Nova tentativa em breve",
+      "lockedOut": "Requer sua atenção"
+    },
     "table": {
       "status": "Status",
       "provider": "Provedor",

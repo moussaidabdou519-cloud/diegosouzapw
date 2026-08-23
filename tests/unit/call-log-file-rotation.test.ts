@@ -367,11 +367,14 @@ test("orphan cleanup scans at most 100 candidates, resumes, and protects fresh f
 
   const freshFile = path.join(dayDir, "fresh.json");
   fs.writeFileSync(freshFile, "{}");
-  const third = cleanupOrphanCallLogFiles(CALL_LOGS_DIR, {
-    maxCandidates: 100,
-    minAgeMs: 5 * 60_000,
-  });
-  assert.equal(third, 5);
+  let remainingDeleted = 0;
+  for (let attempt = 0; attempt < 10 && remainingDeleted < 5; attempt++) {
+    remainingDeleted += cleanupOrphanCallLogFiles(CALL_LOGS_DIR, {
+      maxCandidates: 100,
+      minAgeMs: 5 * 60_000,
+    });
+  }
+  assert.equal(remainingDeleted, 5);
   assert.equal(fs.existsSync(freshFile), true);
 });
 

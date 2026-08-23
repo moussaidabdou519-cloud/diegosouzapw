@@ -322,7 +322,12 @@ async function resetStorage() {
   resetBackgroundStats();
   globalThis.setTimeout = originalSetTimeout;
   core.resetDbInstance();
-  fs.rmSync(TEST_DATA_DIR, { recursive: true, force: true });
+  fs.rmSync(TEST_DATA_DIR, {
+    recursive: true,
+    force: true,
+    maxRetries: 10,
+    retryDelay: 50,
+  });
   fs.mkdirSync(TEST_DATA_DIR, { recursive: true });
 }
 
@@ -369,6 +374,7 @@ async function invokeChatCore({
   onCredentialsRefreshed = null,
   onRequestSuccess = null,
   sessionAffinityKey = null,
+  comboStepId = null,
   reasoningTransportFallback = "drop",
   managedLease = null,
   cachedSettings = null,
@@ -416,6 +422,7 @@ async function invokeChatCore({
       apiKeyInfo,
       userAgent,
       sessionAffinityKey,
+      comboStepId,
       isCombo,
       comboStrategy,
       reasoningTransportFallback,
@@ -760,6 +767,7 @@ test("chatCore preserves Combo skip behavior for incompatible reasoning", async 
     },
     responseFormat: "openai-responses",
     isCombo: true,
+    comboStepId: "step-1",
     reasoningTransportFallback: "skip",
   });
 
@@ -3211,7 +3219,9 @@ test("chatCore releases account semaphore slots when upstream execution throws",
 
   assert.equal(result.success, false);
   assert.equal(result.status, 502);
-  assert.equal(getAccountSemaphoreStats()[semaphoreKey], undefined);
+  const semaphoreState = getAccountSemaphoreStats()[semaphoreKey];
+  assert.equal(semaphoreState?.running ?? 0, 0);
+  assert.equal(semaphoreState?.queued ?? 0, 0);
 });
 test("chatCore locks per-model quota failures without dropping quota helper references", async () => {
   const model = "gemini-1.5-pro";

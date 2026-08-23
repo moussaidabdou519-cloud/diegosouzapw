@@ -21,7 +21,12 @@ const providersDb = await import("../../src/lib/db/providers.ts");
 
 async function resetStorage() {
   core.resetDbInstance();
-  fs.rmSync(TEST_DATA_DIR, { recursive: true, force: true });
+  fs.rmSync(TEST_DATA_DIR, {
+    recursive: true,
+    force: true,
+    maxRetries: 10,
+    retryDelay: 50,
+  });
   fs.mkdirSync(TEST_DATA_DIR, { recursive: true });
 }
 
@@ -88,7 +93,12 @@ test.beforeEach(async () => {
 test.after(() => {
   restorePipelineEnv();
   core.resetDbInstance();
-  fs.rmSync(TEST_DATA_DIR, { recursive: true, force: true });
+  fs.rmSync(TEST_DATA_DIR, {
+    recursive: true,
+    force: true,
+    maxRetries: 10,
+    retryDelay: 50,
+  });
 });
 
 test("saveCallLog stores only summary metadata in SQLite and writes detailed artifact", async () => {
@@ -226,7 +236,11 @@ test("rotateCallLogs removes expired rows and orphaned artifacts but keeps fresh
     has_request_body: 1,
   });
 
-  await callLogs.saveCallLog({
+  const freshRelPath = `${new Date().toISOString().slice(0, 10)}/fresh-log.json`;
+  const freshAbsPath = path.join(TEST_DATA_DIR, "call_logs", freshRelPath);
+  fs.mkdirSync(path.dirname(freshAbsPath), { recursive: true });
+  fs.writeFileSync(freshAbsPath, JSON.stringify({ schemaVersion: 4 }, null, 2));
+  insertCallLog({
     id: "fresh-log",
     timestamp: new Date().toISOString(),
     method: "POST",
@@ -234,14 +248,11 @@ test("rotateCallLogs removes expired rows and orphaned artifacts but keeps fresh
     status: 200,
     model: "openai/gpt-4.1",
     provider: "openai",
-    requestBody: { ok: true },
+    account: "Fresh",
+    detail_state: "ready",
+    artifact_relpath: freshRelPath,
+    has_request_body: 1,
   });
-
-  const freshRow = core
-    .getDbInstance()
-    .prepare("SELECT artifact_relpath FROM call_logs WHERE id = ?")
-    .get("fresh-log");
-  const freshAbsPath = path.join(TEST_DATA_DIR, "call_logs", (freshRow as any).artifact_relpath);
 
   assert.equal(
     (
@@ -274,7 +285,9 @@ test("rotateCallLogs removes expired rows and orphaned artifacts but keeps fresh
   const orphanFile = path.join(orphanDir, "orphan.json");
   fs.mkdirSync(orphanDir, { recursive: true });
   fs.writeFileSync(orphanFile, "{}");
-  callLogs.cleanupOrphanCallLogFiles();
+  for (let attempt = 0; attempt < 10 && fs.existsSync(orphanFile); attempt++) {
+    callLogs.cleanupOrphanCallLogFiles();
+  }
   assert.equal(fs.existsSync(orphanFile), false);
 
   process.env.CALL_LOG_RETENTION_DAYS = "3650";

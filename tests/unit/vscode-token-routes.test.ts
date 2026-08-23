@@ -35,6 +35,7 @@ const vscodeResponsesRoute = await import("../../src/app/api/v1/vscode/[token]/r
 const serviceTierVariants =
   await import("../../src/app/api/v1/vscode/[token]/serviceTierVariants.ts");
 const combosDb = await import("../../src/lib/db/combos.ts");
+const { GPT_5_6_CODEX_CAPABILITIES } = await import("../../open-sse/config/providers/shared.ts");
 
 async function resetStorage() {
   core.resetDbInstance();
@@ -255,7 +256,7 @@ test("vscode combos route resolves combo names through Ollama api/show", async (
   assert.equal(body.model, "show-combo");
   assert.equal(body.modelfile, "FROM show-combo");
   assert.equal(body.details.family, "show-combo");
-  assert.equal(body.model_info.context_length, 272000);
+  assert.equal(body.model_info.context_length, GPT_5_6_CODEX_CAPABILITIES.contextLength);
   assert.deepEqual(body.supportsReasoningEffort, ["none", "low", "medium", "high", "xhigh"]);
   assert.equal(body.model_info.capabilities.reasoning, true);
 });
@@ -290,7 +291,7 @@ test("vscode tokenized combos root route exposes importable combo metadata", asy
   assert.equal(response.status, 200);
   assert.ok(combo, "expected balanced-load in combo root response");
   assert.equal(combo.url.includes("/responses#models.ai.azure.com"), true);
-  assert.equal(combo.maxInputTokens, 272000);
+  assert.equal(combo.maxInputTokens, GPT_5_6_CODEX_CAPABILITIES.maxInputTokens);
   assert.equal(combo.toolCalling, true);
   assert.deepEqual(combo.supportsReasoningEffort, ["none", "low", "medium", "high", "xhigh"]);
 });
@@ -1073,7 +1074,7 @@ test("vscode tokenized api/show route exposes explicit reasoning effort metadata
   assert.equal(body.configurationSchema?.properties?.reasoningEffort?.default, "low");
   assert.equal(body.model_info["general.basename"], "Codex GPT 5.6 Sol (Default)");
   assert.equal(body.model_info["general.architecture"], "codex");
-  assert.equal(body.model_info["codex.context_length"], 272000);
+  assert.equal(body.model_info["codex.context_length"], GPT_5_6_CODEX_CAPABILITIES.contextLength);
   assert.deepEqual(body.model_info.supports_reasoning_effort, [
     "low",
     "medium",

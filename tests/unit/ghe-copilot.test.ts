@@ -85,7 +85,7 @@ test("buildUrl uses chat/completions endpoint for claude and gemini models", () 
     "https://ghe.company.com/chat/completions"
   );
   assert.strictEqual(
-    executor.buildUrl("gemini-3.5-flash", true, 0, credentials),
+    executor.buildUrl("gemini-3.7-flash", true, 0, credentials),
     "https://ghe.company.com/chat/completions"
   );
 });

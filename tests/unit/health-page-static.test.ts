@@ -15,15 +15,15 @@ test("health page leads with a plain-language verdict and a collapsible advanced
   const source = readPage();
 
   // Verdict header with plain-language states
-  assert.match(source, /healthVerdictReady/);
-  assert.match(source, /healthVerdictCoolingDown/);
-  assert.match(source, /healthVerdictActionRequired/);
+  assert.match(source, /t\("allOperational"\)/);
+  assert.match(source, /t\("recovering"\)/);
+  assert.match(source, /t\("issuesDetected"\)/);
 
   // No hardcoded English outcomes in the verdict header
   assert.doesNotMatch(source, /OmniRoute is ready/);
 
   // Collapsible "Advanced diagnostics" section
-  assert.match(source, /advancedDiagnosticsTitle/);
+  assert.match(source, /t\("systemMetrics"\)/);
   assert.match(source, /setShowAdvanced/);
-  assert.match(source, /showAdvanced \? t\("hide"\) : t\("show"\)/);
+  assert.match(source, /showAdvanced \? tc\("hide"\) : tc\("details"\)/);
 });

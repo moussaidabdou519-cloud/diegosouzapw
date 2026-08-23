@@ -1471,11 +1471,6 @@
       "count": 9
     }
   },
-  "tests/integration/qdrant-routes.test.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 19
-    }
-  },
   "tests/integration/resilience-http-e2e.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 3
@@ -1648,7 +1643,7 @@
   },
   "tests/unit/call-log-cap.test.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 43
+      "count": 42
     }
   },
   "tests/unit/call-log-startup.test.ts": {

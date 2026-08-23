@@ -14,7 +14,12 @@ const { createEmbeddingResponse } = await import("../../src/lib/embeddings/servi
 
 test.after(() => {
   core.resetDbInstance();
-  fs.rmSync(TEST_DATA_DIR, { recursive: true, force: true });
+  fs.rmSync(TEST_DATA_DIR, {
+    recursive: true,
+    force: true,
+    maxRetries: 10,
+    retryDelay: 50,
+  });
 });
 
 // #6925: a keyless LAN OpenAI-compatible embeddings provider (e.g. Ollama at

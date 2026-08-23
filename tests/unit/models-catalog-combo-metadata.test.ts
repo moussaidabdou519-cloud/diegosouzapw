@@ -98,7 +98,7 @@ test("single-target Codex combo advertises a larger model context override", asy
     assert.equal(response.status, 200);
     assert.equal(direct?.context_length, contextWindow);
     assert.equal(combo?.context_length, contextWindow);
-    assert.equal(combo?.max_input_tokens, 272000);
+    assert.equal(combo?.max_input_tokens, contextWindow);
   } finally {
     contextOverrides.removeModelContextOverride("codex", modelId);
   }

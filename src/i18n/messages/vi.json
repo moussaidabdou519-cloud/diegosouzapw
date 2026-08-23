@@ -1300,13 +1300,7 @@
       "open": "mở",
       "close": "đóng"
     },
-    "noResults": "Không có kết quả",
-    "healthVerdictReady": "OmniRoute đã sẵn sàng",
-    "healthVerdictActionRequired": "Cần hành động để khôi phục hoạt động đầy đủ",
-    "healthVerdictCoolingDown": "Đang nguội sau các thay đổi gần đây",
-    "advancedDiagnosticsTitle": "Chẩn đoán nâng cao",
-    "hide": "Ẩn",
-    "show": "Hiện"
+    "noResults": "Không có kết quả"
   },
   "webhooks": {
     "title": "Webhook",
@@ -2919,7 +2913,8 @@
       "omp": "Tác nhân lập trình Oh My Pi trên terminal",
       "letta": "Tác nhân Letta CLI có bộ nhớ lâu dài và khả năng dùng công cụ",
       "warp": "Terminal Warp AI hỗ trợ nhà cung cấp tùy chỉnh",
-      "agent-deck": "Trình điều phối đa tác nhân Agent Deck"
+      "agent-deck": "Trình điều phối đa tác nhân Agent Deck",
+      "prime-agent": "Prime Agent hỗ trợ nhà cung cấp tương thích OpenAI"
     },
     "guides": {
       "cursor": {

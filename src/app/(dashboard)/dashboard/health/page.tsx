@@ -271,15 +271,13 @@ export default function HealthPage() {
       {/* Verdict Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">
-          {
-            data.status === "healthy"
-              ? t("healthVerdictReady")
-              : data.status === "cooling"
-                ? t("healthVerdictCoolingDown")
-                : t("healthVerdictActionRequired")
-          }
+          {data.status === "healthy"
+            ? t("allOperational")
+            : data.status === "cooling"
+              ? t("recovering")
+              : t("issuesDetected")}
         </h1>
-        <p className="text-text-muted text-lg">{t("healthSubtitle")}</p>
+        <p className="text-text-muted text-lg">{t("description")}</p>
       </div>
 
       {/* Status Details */}
@@ -300,21 +298,19 @@ export default function HealthPage() {
           {data.status === "healthy" ? "check_circle" : "error"}
         </span>
         <span className={data.status === "healthy" ? "text-green-400" : "text-red-400"}>
-          {data.status === "healthy"
-            ? t("allOperational")
-            : t("issuesDetected")}
+          {data.status === "healthy" ? t("allOperational") : t("issuesDetected")}
         </span>
       </div>
 
       {/* Advanced Diagnostics Section */}
       <div className="mt-8">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">{t("advancedDiagnosticsTitle")}</h2>
+          <h2 className="text-xl font-semibold">{t("systemMetrics")}</h2>
           <button
             onClick={() => setShowAdvanced(!showAdvanced)}
             className="text-primary hover:underline"
           >
-            {showAdvanced ? t("hide") : t("show")}
+            {showAdvanced ? tc("hide") : tc("details")}
           </button>
         </div>
         <div className={showAdvanced ? "block" : "hidden"}>
