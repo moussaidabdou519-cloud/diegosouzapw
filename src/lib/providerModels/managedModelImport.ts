@@ -20,7 +20,9 @@ import { normalizeDiscoveredModels } from "@/lib/providerModels/modelDiscovery";
 import {
   ANTIGRAVITY_MODEL_ALIASES,
   ANTIGRAVITY_REVERSE_MODEL_ALIASES,
+  isDiscoverableAntigravityModelId,
 } from "@omniroute/open-sse/config/antigravityModelAliases.ts";
+import { isDiscoverableAgyModelId } from "@omniroute/open-sse/config/agyModels.ts";
 import { filterChatSelectableModels } from "@omniroute/open-sse/services/modelEndpointPolicy.ts";
 import { filterSelectableModels } from "@omniroute/open-sse/services/modelLifecycle.ts";
 
@@ -253,9 +255,16 @@ export async function importManagedModels({
   const previousSyncedAvailableModels =
     previousSyncedAvailableModelsInput ??
     (await getSyncedAvailableModelsForConnection(providerId, connectionId));
+  const normalizedDiscoveredModels = normalizeDiscoveredModels(fetchedModels, providerId);
+  const providerFilteredModels =
+    providerId === "antigravity"
+      ? normalizedDiscoveredModels.filter((model) => isDiscoverableAntigravityModelId(model.id))
+      : providerId === "agy"
+        ? normalizedDiscoveredModels.filter((model) => isDiscoverableAgyModelId(model.id))
+        : normalizedDiscoveredModels;
   const discoveredModels = filterChatSelectableModels(
     providerId,
-    filterSelectableModels(providerId, normalizeDiscoveredModels(fetchedModels, providerId))
+    filterSelectableModels(providerId, providerFilteredModels)
   );
   const candidateImportedModels = normalizeImportedModels(discoveredModels);
   const importedIds = new Set(candidateImportedModels.map((model) => model.id));
